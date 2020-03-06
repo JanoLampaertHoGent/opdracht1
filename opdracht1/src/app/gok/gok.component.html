@@ -1,0 +1,14 @@
+<h1>Gokspel</h1>
+
+<form [formGroup]="gokForm" (ngSubmit)="onSubmit(gokForm.value)">
+  <div>
+    <input type="number" placeholder="Gok" formControlName="mijnGok" max="100" min="1">
+  </div>
+  <button mat-button type="submit">Plaats Gok</button>
+</form>
+
+<p>
+  {{ redenEinde }}<br />
+  U heeft nog {{ gokkenOver }} pogingen<br />
+  en nog {{ timeLeft }} seconden over.
+</p>
