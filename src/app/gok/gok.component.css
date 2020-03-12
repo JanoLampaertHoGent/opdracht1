@@ -1,0 +1,13 @@
+mat-card {
+  background: white;
+  color: #424242;
+  margin: 10px;
+}
+
+.mat-chip-list-wrapper {
+  display: block;
+}
+
+mat-chip {
+  float: left;
+}

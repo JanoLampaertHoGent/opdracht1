@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 
 import { GokService } from '../gok.service';
+import { GoktimerService } from '../goktimer.service';
 
 @Component({
   selector: 'app-gok',
@@ -9,81 +10,54 @@ import { GokService } from '../gok.service';
   styleUrls: ['./gok.component.css']
 })
 export class GokComponent implements OnInit {
-  gokken;
   gokForm;
-
-  timeLeft: number = 60;
-  gokkenOver: number = 10;
-  interval;
-  randomGetal: number = Math.floor((Math.random() * 100) + 1);
-  redenEinde = "";
+  gokken = [];
+  gokRemaining: number = 10;
+  secondsCount: number = 60;
+  randomGetal: number = 0;
+  gokReden: string = "";
+  gokVoltooid: boolean = false;
 
   constructor(
     private gokService: GokService,
+    private goktimerService: GoktimerService,
     private formBuilder: FormBuilder
   ) {
+    goktimerService.seconds.subscribe((seconds) => this.secondsCount = seconds);
     this.gokForm = this.formBuilder.group({
-      mijnGok: 0
+      gok: 0
     });
   }
 
   ngOnInit() {
     this.gokken = this.gokService.weergeven();
-    this.startTimer();
-  }
-
-  voegGokToe(gok) {
-    this.gokService.toevoegen(gok);
+    this.gokRemaining = 10 - this.gokken.length;
+    this.randomGetal = this.gokService.randomGetal;
   }
 
   onSubmit(gokData) {
-    this.gokService.toevoegen(gokData.mijnGok);
-    this.gokkenOver--;
+    this.gokService.toevoegen(gokData.gok);
 
-    if (gokData.mijnGok == this.randomGetal) {
-      this.redenEinde = `U heeft gewonnen! Het random getal was inderdaad ${this.randomGetal}. Dit heeft u geraden in ${10 - this.gokkenOver} gokken en ${60 - this.timeLeft} seconden.\nHet spel begint opnieuw!!!`;
-      this.pauseTimer();
+    this.gokken = this.gokService.weergeven();
+    this.gokRemaining = 10 - this.gokken.length;
 
-      this.restartGame();
-    } else {
-      if (this.gokkenOver == 0) {
-        this.resetTimer();
-        this.redenEinde = "U heeft het maximum aantal gokken overschreden...\nHet spel begint opnieuw!!!";
-
-        this.restartGame();
-      }
-    }
+    if (gokData.gok == this.randomGetal) {
+      this.gokReden = `Het random getal was inderdaad ${this.randomGetal}`;
+      this.goktimerService.stopTimer();
+      this.gokVoltooid = true;
+    } else if (gokData.gok < this.randomGetal) this.gokReden = `Het random getal ligt HOGER dan ${gokData.gok}`;
+    else if (gokData.gok > this.randomGetal) this.gokReden = `Het random getal ligt LAGER dan ${gokData.gok}`;
   }
 
-  startTimer() {
-    this.interval = setInterval(() => {
-      if (this.timeLeft > 0) this.timeLeft--;
-      else {
-        this.resetTimer();
-        this.redenEinde = "Uw 60 seconden zijn over...\nHet spel begint opnieuw!!!";
-
-        this.restartGame();
-      }
-    }, 1000);
-  }
-
-  pauseTimer() {
-    clearInterval(this.interval);
-  }
-
-  resetTimer() {
-    clearInterval(this.interval);
-    this.timeLeft = 60;
-  }
-
-  restartGame() {
-    this.resetTimer();
-    this.timeLeft = 60;
-    this.gokkenOver = 10;
+  public herstartSpel = () => {
+    this.gokVoltooid = false;
     this.gokService.legen();
-    this.randomGetal = Math.floor((Math.random() * 100) + 1);
-
-    this.startTimer();
+    this.gokken = this.gokService.weergeven();
+    this.gokRemaining = 10 - this.gokken.length;
+    this.gokReden = "";
+    this.gokService.nieuwRandomGetal();
+    this.randomGetal = this.gokService.randomGetal;
+    this.goktimerService.startTimer();
   }
 }
 

@@ -4,19 +4,25 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class GokService {
-  gokken = [];
-  constructor() { }
+  private gokken = [];
+  randomGetal: number = 0;
 
-  toevoegen(gok) {
+  constructor() {
+    this.nieuwRandomGetal();
+  }
+
+  toevoegen = (gok) => {
     this.gokken.push(gok);
   }
 
-  weergeven() {
+  weergeven = () => this.gokken;
+
+  legen = () => {
+    this.gokken = [];
     return this.gokken;
   }
 
-  legen() {
-    this.gokken = [];
-    return this.gokken;
+  nieuwRandomGetal = () => {
+    this.randomGetal = Math.floor((Math.random() * 100) + 1);
   }
 }
