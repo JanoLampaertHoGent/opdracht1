@@ -23,7 +23,16 @@ export class GokComponent implements OnInit {
     private goktimerService: GoktimerService,
     private formBuilder: FormBuilder
   ) {
-    goktimerService.seconds.subscribe((seconds) => this.secondsCount = seconds);
+    goktimerService.seconds.subscribe((seconds) => {
+      this.secondsCount = seconds;
+
+      if (this.secondsCount == 0) {
+        this.gokReden = `Het maximum aantal seconden is verstreken...`;
+        this.goktimerService.stopTimer();
+        this.gokVoltooid = true;
+      }
+    });
+
     this.gokForm = this.formBuilder.group({
       gok: 0
     });
@@ -47,6 +56,12 @@ export class GokComponent implements OnInit {
       this.gokVoltooid = true;
     } else if (gokData.gok < this.randomGetal) this.gokReden = `Het random getal ligt HOGER dan ${gokData.gok}`;
     else if (gokData.gok > this.randomGetal) this.gokReden = `Het random getal ligt LAGER dan ${gokData.gok}`;
+
+    if (this.gokRemaining == 0) {
+      this.gokReden = `Het maximum aantal gokken is verstreken...`;
+      this.goktimerService.stopTimer();
+      this.gokVoltooid = true;
+    }
   }
 
   public herstartSpel = () => {

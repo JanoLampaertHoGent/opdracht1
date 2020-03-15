@@ -3,22 +3,24 @@
     <div fxFlex="50" fxLayout="column" fxFlex.lt-md="100">
       <mat-card>
         <mat-card-content>
-          <h1>Voer uw gok in... {{ randomGetal }}</h1>
+          <div *ngIf="gokVoltooid; else inputBlock">
+            <button mat-button (click)="herstartSpel()">Herstart Spel</button>
+          </div>
+          <ng-template #inputBlock>
+            <h1>Voer uw gok in... {{ randomGetal }}</h1>
 
-          <form [formGroup]="gokForm" (ngSubmit)="onSubmit(gokForm.value)">
-            <mat-form-field>
-              <input type="number" formControlName="gok" matInput autofocus="true">
-            </mat-form-field>
+            <form [formGroup]="gokForm" (ngSubmit)="onSubmit(gokForm.value)">
+              <mat-form-field>
+                <input type="number" formControlName="gok" matInput autofocus="true">
+              </mat-form-field>
 
-            <button type="submit" mat-button>Plaats gok</button>
-          </form>
+              <button type=" submit" mat-button>Plaats gok</button>
+            </form>
+          </ng-template>
         </mat-card-content>
 
         <mat-card-footer style="padding: 10px">
           {{ gokReden }}
-          <div *ngIf="gokVoltooid">
-            <button mat-button (click)="herstartSpel()">Herstart Spel</button>
-          </div>
         </mat-card-footer>
       </mat-card>
     </div>
